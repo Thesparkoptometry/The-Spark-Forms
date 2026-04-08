@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School / Work Excuse — The Spark Optometry</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --rule: #d4cfc9;
+    --bg: #faf8f5;
+    --accent: #2e5f6e;
+    --accent-light: #e8f0f2;
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .page-wrapper { max-width: 780px; margin: 0 auto; }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 9px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: #234b59; }
+  .btn-secondary { background: transparent; color: var(--accent); border-color: var(--accent); }
+  .btn-secondary:hover { background: var(--accent-light); }
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--rule); }
+  .btn-ghost:hover { border-color: #aaa; color: var(--ink); }
+
+  /* FORM CARD */
+  #form-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 52px 60px 48px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.05);
+  }
+
+  .location-selector {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 32px;
+  }
+
+  .practice-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  .practice-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .location-block {
+    text-align: right;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .location-block .loc-name {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  select, input[type="text"], input[type="date"], input[type="email"], textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 9px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(46,95,110,0.08);
+  }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+  textarea { resize: none; min-height: 72px; line-height: 1.5; }
+
+  .form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .form-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+    letter-spacing: 0.03em;
+  }
+
+  .toggle-group {
+    display: flex;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .toggle-group input[type="radio"] { display: none; }
+  .toggle-group label {
+    flex: 1;
+    text-align: center;
+    padding: 9px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+    border-right: 1px solid var(--rule);
+  }
+  .toggle-group label:last-of-type { border-right: none; }
+  .toggle-group input[type="radio"]:checked + label {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .notice-body {
+    background: #f7f5f1;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 22px 26px;
+    margin: 26px 0;
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--ink);
+  }
+  .notice-body .hl {
+    font-weight: 500;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 1px;
+  }
+
+  .sign-row {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    max-width: 60%;
+  }
+
+  .sign-row .field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .date-under-sig {
+    margin-top: 16px;
+  }
+
+  .date-under-sig .field-label {
+    margin-bottom: 4px;
+  }
+
+  .date-value {
+    font-size: 14px;
+    color: var(--ink);
+    padding: 4px 2px;
+    border-bottom: 1.5px solid var(--ink);
+    position: relative;
+    display: inline-block;
+    min-width: 160px;
+  }
+
+  .date-value input[type="date"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .signature-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--ink);
+    padding: 4px 2px 4px;
+    border-bottom: 1.5px solid var(--ink);
+    min-height: 42px;
+    margin-top: 8px;
+  }
+  .sig-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .form-footer {
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 36px 40px;
+    width: 460px;
+    max-width: 95vw;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+  }
+  .modal h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .modal > p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+  .modal .field { margin-bottom: 16px; }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    justify-content: flex-end;
+  }
+  .info-box {
+    background: var(--accent-light);
+    border: 1px solid #b0cdd4;
+    border-radius: 3px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #1e4652;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 200;
+    pointer-events: none;
+    max-width: 360px;
+    line-height: 1.4;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    @page { size: letter portrait; margin: 0.55in 0.6in; }
+
+    html, body { background: white !important; padding: 0 !important; margin: 0 !important; height: 100% !important; }
+    body { display: flex !important; align-items: center !important; min-height: 100vh !important; }
+    .toolbar, .location-selector, .modal-overlay, .toast { display: none !important; }
+
+    .page-wrapper { max-width: 100% !important; }
+
+    #form-card {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* Tighten up vertical spacing */
+    .header { padding-bottom: 10px !important; margin-bottom: 14px !important; }
+    .practice-name { font-size: 22px !important; }
+    .form-title { font-size: 36px !important; margin-bottom: 16px !important; letter-spacing: 0.1em !important; }
+
+    /* Note type toggle — keep visible with teal highlight */
+    .field[style*="margin-bottom:24px"],
+    .field[style*="margin-bottom: 24px"] { margin-bottom: 14px !important; display: block !important; }
+    .toggle-group {
+      border: 1px solid #d4cfc9 !important;
+      border-radius: 3px !important;
+      overflow: hidden !important;
+      display: flex !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toggle-group input[type="radio"] { display: none !important; }
+    .toggle-group label {
+      display: block !important;
+      flex: 1 !important;
+      text-align: center !important;
+      padding: 7px 12px !important;
+      font-size: 11px !important;
+      color: #6b6b6b !important;
+      border-right: 1px solid #d4cfc9 !important;
+    }
+    .toggle-group label:last-of-type { border-right: none !important; }
+    .toggle-group input[type="radio"]:checked + label {
+      background: #2e5f6e !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+    }
+
+    /* Compact grid */
+    .grid-2 { gap: 10px !important; margin-bottom: 10px !important; }
+    .field { gap: 2px !important; }
+    .field-label { margin-bottom: 2px !important; font-size: 9px !important; }
+
+    /* Inputs: flat underline only */
+    select, input, textarea {
+      border: none !important;
+      border-bottom: 1px solid #bbb !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 3px 2px !important;
+      font-size: 12px !important;
+      background: transparent !important;
+    }
+    .select-wrap::after { display: none !important; }
+
+    /* Notice paragraph */
+    .notice-body {
+      background: #f7f5f1 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 12px 16px !important;
+      margin: 10px 0 !important;
+      font-size: 12px !important;
+      line-height: 1.65 !important;
+    }
+
+    /* Textarea */
+    textarea { min-height: 40px !important; font-size: 12px !important; }
+
+    /* Signature block in print */
+    .sign-row { margin-top: 12px !important; padding-top: 12px !important; max-width: 60% !important; }
+    .sign-row > .field > .field-label,
+    .sign-row > .field > .select-wrap { display: none !important; }
+    .signature-display { font-size: 22px !important; min-height: 32px !important; margin-top: 4px !important; }
+    .sig-sub { font-size: 10px !important; }
+    .date-under-sig { margin-top: 10px !important; }
+    .date-value { font-size: 11px !important; }
+
+    /* Hide additional notes label in print */
+    .no-print { display: none !important; }
+
+    /* Date field alignment in print */
+    .date-field { justify-content: flex-end !important; }
+    .date-field .field-label { text-align: right !important; font-size: 9px !important; }
+    .date-field input {
+      text-align: right !important;
+      border: none !important;
+      border-bottom: 1px solid #bbb !important;
+      padding: 3px 2px !important;
+      font-size: 12px !important;
+      background: transparent !important;
+    }
+
+    /* Footer */
+    .form-footer { margin-top: 14px !important; padding-top: 10px !important; font-size: 10px !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <div class="toolbar">
+    <button class="btn btn-ghost" onclick="doPrint()">🖨 Print</button>
+    <button class="btn btn-secondary" onclick="openEmailModal()">✉ Email to Patient</button>
+    <button class="btn btn-primary" onclick="doPrint('pdf')">⬇ Save as PDF</button>
+  </div>
+
+  <div id="form-card">
+
+    <div class="location-selector">
+      <label class="field-label">Select Location</label>
+      <div class="select-wrap">
+        <select id="loc-select" onchange="updateLocation()">
+          <option value="">— Choose a location —</option>
+          <option value="sc">Santa Clara</option>
+          <option value="fr">Fremont</option>
+          <option value="wc">Walnut Creek</option>
+          <option value="sv">Sunnyvale</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="header">
+      <div>
+        <div class="practice-name">The Spark Optometry</div>
+
+      </div>
+      <div class="location-block">
+        <div class="loc-name" id="loc-name-d">—</div>
+        <div id="loc-addr-d">—</div>
+        <div id="loc-phone-d">—</div>
+        <div id="loc-fax-d">Fax: —</div>
+      </div>
+    </div>
+
+    <div class="form-title">Excuse / Absence Note</div>
+
+
+    <div class="field" style="margin-bottom:24px;">
+      <label class="field-label">Note Type</label>
+      <div class="toggle-group">
+        <input type="radio" name="nt" id="nt-s" value="school" checked onchange="updateNotice()">
+        <label for="nt-s">School</label>
+        <input type="radio" name="nt" id="nt-w" value="work" onchange="updateNotice()">
+        <label for="nt-w">Work</label>
+        <input type="radio" name="nt" id="nt-o" value="other" onchange="updateNotice()">
+        <label for="nt-o">Other</label>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Patient Name</label>
+        <input type="text" id="patient-name" placeholder="Full name" oninput="updateNotice()">
+      </div>
+      <div class="field">
+        <label class="field-label">Date of Birth</label>
+        <input type="date" id="dob">
+      </div>
+      <div class="field">
+        <label class="field-label">Date of Visit</label>
+        <input type="date" id="visit-date" oninput="updateNotice()">
+      </div>
+      <div class="field">
+        <label class="field-label">Cleared to Return (if applicable)</label>
+        <input type="date" id="return-date" oninput="updateNotice()">
+      </div>
+      <div class="field full">
+        <label class="field-label">School / Employer Name</label>
+        <input type="text" id="org-name" placeholder="Name of school or workplace" oninput="updateNotice()">
+      </div>
+    </div>
+
+    <div class="notice-body">
+      To Whom It May Concern,<br><br>
+      This is to certify that <span class="hl" id="n-name">_______________</span>
+      was seen as a patient at The Spark Optometry on
+      <span class="hl" id="n-date">_______________</span>
+      for a scheduled eye care appointment. Their absence from
+      <span class="hl" id="n-org">school / work</span>
+      on this date was necessary and is hereby excused.
+      <span id="return-line" style="display:none;">
+        <br><br>The patient is cleared to return on <span class="hl" id="n-return">_______________</span>.
+      </span>
+      <br><br>
+      Please excuse this absence accordingly. If you have any questions, please do not hesitate to contact our office directly.
+    </div>
+
+    <div class="field">
+      <label class="field-label no-print">Additional Notes (optional)</label>
+      <textarea id="add-notes" placeholder="Any restrictions, accommodations, or further details:"></textarea>
+    </div>
+
+    <div class="sign-row">
+      <div class="field">
+        <label class="field-label">Attending Doctor</label>
+        <div class="select-wrap">
+          <select id="doctor-select" onchange="updateSig()">
+            <option value="">— Select doctor —</option>
+            <option value="Annie Duong, OD">Dr. Annie Duong, OD</option>
+            <option value="Bethany Zhang, OD">Dr. Bethany Zhang, OD</option>
+            <option value="Christine Yang, OD">Dr. Christine Yang, OD</option>
+            <option value="Gurkarn Ghag, OD">Dr. Gurkarn Ghag, OD</option>
+            <option value="Ivy Kha, OD">Dr. Ivy Kha, OD</option>
+            <option value="Jennifer Phan, OD">Dr. Jennifer Phan, OD</option>
+            <option value="KaYee So, OD">Dr. KaYee So, OD</option>
+            <option value="Kimberly Cheng, OD">Dr. Kimberly Cheng, OD</option>
+            <option value="Lisa Fan, OD">Dr. Lisa Fan, OD</option>
+            <option value="Monica Luong, OD">Dr. Monica Luong, OD</option>
+            <option value="Rachel Kaneta, OD">Dr. Rachel Kaneta, OD</option>
+            <option value="Thomas Pan, OD">Dr. Thomas Pan, OD</option>
+          </select>
+        </div>
+        <div class="signature-display" id="sig-display"></div>
+        <div class="sig-sub" id="sig-sub">&nbsp;</div>
+        <div class="date-under-sig">
+          <label class="field-label">Date Issued</label>
+          <div class="date-value" id="issue-date-display">—<input type="date" id="issue-date" oninput="updateDateDisplay()"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      The Spark Optometry &nbsp;·&nbsp; <span id="footer-loc">Select a location above</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Email Modal -->
+<div class="modal-overlay" id="email-modal">
+  <div class="modal">
+    <h3>Email to Patient</h3>
+    <p>Your default mail client will open pre-filled. Use <strong>Print → Save as PDF</strong> first to generate the attachment.</p>
+    <div class="info-box">
+      💡 <strong>Tip:</strong> Click "Save as PDF" first, then come back and click "Email to Patient." Your mail client will open pre-filled — just attach the saved PDF.
+    </div>
+    <div class="field">
+      <label class="field-label">Patient Email Address</label>
+      <input type="email" id="email-to" placeholder="patient@email.com">
+    </div>
+    <div class="field">
+      <label class="field-label">Subject Line</label>
+      <input type="text" id="email-subject" value="Your Excuse Note — The Spark Optometry">
+    </div>
+    <div class="field">
+      <label class="field-label">Message</label>
+      <textarea id="email-body" style="min-height:100px;">Dear Patient,
+
+Please find your excuse note attached from The Spark Optometry.
+
+If you have any questions, please don't hesitate to contact our office.
+
+Warm regards,
+The Spark Optometry Team</textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEmailModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="sendEmail()">Open Email Client</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- iOS Modal -->
+<div class="modal-overlay" id="ios-modal">
+  <div class="modal">
+    <h3>Save or Print on iPhone</h3>
+    <p>Safari on iPhone doesn't support automatic print dialogs. Here's how to save as PDF or print:</p>
+    <div class="info-box" style="margin-bottom:14px;">
+      <strong>To save as PDF:</strong><br>
+      1. Tap the <strong>Share button</strong> (↑ box with arrow) at the bottom of Safari<br>
+      2. Scroll down and tap <strong>"Print"</strong><br>
+      3. Pinch <strong>outward</strong> on the preview — this converts it to a PDF<br>
+      4. Tap the Share button again → <strong>"Save to Files"</strong>
+    </div>
+    <div class="info-box" style="margin-bottom:0;">
+      <strong>To print directly:</strong><br>
+      1. Tap the <strong>Share button</strong> at the bottom of Safari<br>
+      2. Tap <strong>"Print"</strong> and select your printer
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeIOSModal()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOCS = {
+  sc: { name:"Santa Clara",  addr:"2004 El Camino Real, Santa Clara, CA 95050",   phone:"(408) 244-2831", fax:"(408) 241-3706" },
+  fr: { name:"Fremont",      addr:"39201 Fremont Blvd., Fremont, CA 94538",        phone:"(510) 789-0914", fax:"(510) 795-7910" },
+  wc: { name:"Walnut Creek", addr:"1871 N. Main St., Walnut Creek, CA 94596",      phone:"(925) 627-8230", fax:"(925) 280-5530" },
+  sv: { name:"Sunnyvale",    addr:"298 W. McKinley Ave., Sunnyvale, CA 94086",     phone:"(408) 702-1029", fax:"(408) 962-2972" }
+};
+
+function updateLocation() {
+  const k = document.getElementById('loc-select').value;
+  const l = LOCS[k];
+  if (!l) {
+    document.getElementById('loc-name-d').textContent = '—';
+    document.getElementById('loc-addr-d').textContent = '—';
+    document.getElementById('loc-phone-d').textContent = '—';
+    document.getElementById('loc-fax-d').textContent = 'Fax: —';
+    document.getElementById('footer-loc').textContent = 'Select a location above';
+    return;
+  }
+  document.getElementById('loc-name-d').textContent = l.name;
+  document.getElementById('loc-addr-d').textContent = l.addr;
+  document.getElementById('loc-phone-d').textContent = l.phone;
+  document.getElementById('loc-fax-d').textContent = 'Fax: ' + l.fax;
+  document.getElementById('footer-loc').textContent =
+    `${l.name}  ·  ${l.addr}  ·  Tel: ${l.phone}  ·  Fax: ${l.fax}`;
+}
+
+function fmtDate(s) {
+  if (!s) return null;
+  const [y,m,d] = s.split('-');
+  const M = ['January','February','March','April','May','June',
+             'July','August','September','October','November','December'];
+  return `${M[+m-1]} ${+d}, ${y}`;
+}
+
+function noteWord() {
+  const v = document.querySelector('input[name="nt"]:checked').value;
+  return v === 'other' ? 'their institution' : v;
+}
+
+function updateNotice() {
+  const name = document.getElementById('patient-name').value.trim();
+  const vd   = document.getElementById('visit-date').value;
+  const rd   = document.getElementById('return-date').value;
+  const org  = document.getElementById('org-name').value.trim();
+
+  document.getElementById('n-name').textContent = name || '_______________';
+  document.getElementById('n-date').textContent = fmtDate(vd) || '_______________';
+  document.getElementById('n-org').textContent  = org || noteWord();
+
+  const rl = document.getElementById('return-line');
+  if (rd) {
+    document.getElementById('n-return').textContent = fmtDate(rd);
+    rl.style.display = 'inline';
+  } else {
+    rl.style.display = 'none';
+  }
+}
+
+function updateSig() {
+  const sel = document.getElementById('doctor-select');
+  const val = sel.value;
+  const txt = sel.options[sel.selectedIndex].text;
+  document.getElementById('sig-display').textContent = val || '';
+  document.getElementById('sig-sub').textContent = val
+    ? txt + '  ·  The Spark Optometry'
+    : '\u00a0';
+}
+
+function toast(msg, dur=3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function doPrint(mode) {
+  if (isIOS()) {
+    openIOSModal();
+    return;
+  }
+  if (mode === 'pdf') {
+    toast('In the print dialog, choose "Save as PDF" as the destination.', 5000);
+    setTimeout(() => window.print(), 400);
+  } else {
+    window.print();
+  }
+}
+
+function openIOSModal() {
+  document.getElementById('ios-modal').classList.add('open');
+}
+
+function closeIOSModal() {
+  document.getElementById('ios-modal').classList.remove('open');
+}
+
+function openEmailModal() {
+  const n = document.getElementById('patient-name').value.trim();
+  if (n) document.getElementById('email-subject').value =
+    `Excuse Note for ${n} — The Spark Optometry`;
+  document.getElementById('email-modal').classList.add('open');
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal').classList.remove('open');
+}
+
+function sendEmail() {
+  const to      = document.getElementById('email-to').value.trim();
+  const subject = document.getElementById('email-subject').value.trim();
+  const body    = document.getElementById('email-body').value.trim();
+  if (!to) { toast('Please enter a patient email address.'); return; }
+  const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+  closeEmailModal();
+  toast('Mail client opened. Attach the saved PDF before sending.', 5000);
+}
+
+function updateDateDisplay() {
+  const val = document.getElementById('issue-date').value;
+  const display = document.getElementById('issue-date-display');
+  if (val) {
+    const [y,m,d] = val.split('-');
+    display.childNodes[0].textContent = `${m}/${d}/${y}`;
+  } else {
+    display.childNodes[0].textContent = '—';
+  }
+}
+
+// Init
+(function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('visit-date').value = today;
+  document.getElementById('issue-date').value = today;
+  updateNotice();
+  updateDateDisplay();
+})();
+</script>
+</body>
+</html>
