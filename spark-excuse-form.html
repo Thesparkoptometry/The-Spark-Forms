@@ -235,23 +235,23 @@
     margin-bottom: 4px;
   }
 
-  .date-value {
+  .date-under-sig input[type="date"] {
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     color: var(--ink);
-    padding: 4px 2px;
+    background: transparent;
+    border: none;
     border-bottom: 1.5px solid var(--ink);
-    position: relative;
-    display: inline-block;
-    min-width: 160px;
+    border-radius: 0;
+    padding: 4px 2px;
+    width: 180px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
-  .date-value input[type="date"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
+  .date-under-sig input[type="date"]:focus {
+    border-bottom-color: var(--accent);
   }
 
   .signature-display {
@@ -583,7 +583,7 @@
         <div class="sig-sub" id="sig-sub">&nbsp;</div>
         <div class="date-under-sig">
           <label class="field-label">Date Issued</label>
-          <div class="date-value" id="issue-date-display">—<input type="date" id="issue-date" oninput="updateDateDisplay()"></div>
+          <input type="date" id="issue-date">
         </div>
       </div>
     </div>
@@ -778,24 +778,12 @@ function sendEmail() {
   toast('Mail client opened. Attach the saved PDF before sending.', 5000);
 }
 
-function updateDateDisplay() {
-  const val = document.getElementById('issue-date').value;
-  const display = document.getElementById('issue-date-display');
-  if (val) {
-    const [y,m,d] = val.split('-');
-    display.childNodes[0].textContent = `${m}/${d}/${y}`;
-  } else {
-    display.childNodes[0].textContent = '—';
-  }
-}
-
 // Init
 (function() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('visit-date').value = today;
   document.getElementById('issue-date').value = today;
   updateNotice();
-  updateDateDisplay();
 })();
 </script>
 </body>
